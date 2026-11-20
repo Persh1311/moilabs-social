@@ -16,6 +16,6 @@ window.addEventListener('message', async e => {
     log('gesendet: ' + e.data.paths.length + ' Bilder');
   } catch (err) { e.source.postMessage({type: 'moi-files', id: e.data.id, error: String(err)}, OK); log('Fehler ' + err); }
 });
-if (window.opener) window.opener.postMessage({type: 'moi-ready'}, OK);
+(window.opener || (window.parent !== window ? window.parent : null))?.postMessage({type: 'moi-ready'}, OK);
 log('bereit');
 </script>
