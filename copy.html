@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><title>MoiLabs Kopie</title>
+<body style="font:18px system-ui;background:#0a0a0b;color:#ffd60a;padding:24px">
+<button id="b" style="font:700 28px system-ui;padding:30px 50px;background:#ffd60a;border:0;border-radius:16px">KOPIEREN</button>
+<pre id="s" style="color:#aaa"></pre>
+<script>
+const q = new URLSearchParams(location.search);
+const paths = (q.get('p') || '').split(',').filter(Boolean);
+let payload = null;
+(async () => {
+  const files = [];
+  for (const p of paths) {
+    const r = await fetch(p, {cache: 'no-store'}); const b = new Uint8Array(await r.arrayBuffer());
+    let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000));
+    files.push({n: p, d: btoa(s)});
+  }
+  payload = 'MOIFILES' + JSON.stringify(files);
+  document.getElementById('s').textContent = 'bereit: ' + paths.length + ' Dateien, ' + Math.round(payload.length / 1024) + ' KB';
+})();
+document.getElementById('b').onclick = async () => {
+  try { await navigator.clipboard.writeText(payload); document.getElementById('s').textContent += '\nkopiert'; }
+  catch (e) { document.getElementById('s').textContent += '\nFehler ' + e; }
+};
+</script>
